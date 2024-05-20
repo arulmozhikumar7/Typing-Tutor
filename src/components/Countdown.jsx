@@ -1,7 +1,21 @@
 import React, { useEffect, useRef } from "react";
 import useStore from "../context/store";
+
 const Countdown = () => {
-  const { count, setCount, isRunning, setIsRunning } = useStore();
+  const {
+    count,
+    setCount,
+    isRunning,
+    setIsRunning,
+    setCurrentpoint,
+    setPoints,
+    currentpoint,
+    points,
+    best,
+    setBest,
+    user,
+    saveHighScore,
+  } = useStore();
 
   const intervalRef = useRef(null);
 
@@ -11,6 +25,19 @@ const Countdown = () => {
         setCount(count - 1);
       }, 1000);
     } else {
+      if (count === 0) {
+        console.log(points);
+        setCurrentpoint(points);
+
+        if (points > best) {
+          setBest(points);
+          if (user) {
+            saveHighScore(user.uid, points);
+          }
+        }
+        setPoints(0);
+        document.getElementById("my_modal_3").showModal();
+      }
       clearInterval(intervalRef.current);
     }
 
@@ -21,43 +48,61 @@ const Countdown = () => {
     setIsRunning(true);
   };
 
-  const pauseTimer = () => {
-    setIsRunning(false);
-  };
-
   const resetTimer = () => {
     setIsRunning(false);
-    setCount(10);
+    clearInterval(intervalRef.current);
+    setCurrentpoint(points);
+    setPoints(0);
+    setCount(60);
   };
 
   return (
     <div>
       <div
-        className={`text-5xl flex justify-center ${
-          count < 4 ? "text-red-500" : "text-green-500"
+        className={`flex justify-center  ${
+          count < 11 ? "text-red-500" : "text-green-500"
         } m-5 `}
       >
-        {count > 0 ? count : "Time's up!"}
+        <span className="text-5xl countdown ">
+          <span style={{ "--value": count }}></span>
+        </span>
       </div>
-      <div className="grid grid-cols-5 gap-3">
+
+      <div className="grid grid-cols-4 gap-3">
         <button
           onClick={startTimer}
-          disabled={isRunning}
-          className="btn col-start-2"
+          disabled={isRunning || user ? false : true}
+          className="col-start-2 btn"
         >
           Start
         </button>
-        <button
-          onClick={pauseTimer}
-          disabled={!isRunning}
-          className="btn col-start-3"
-        >
-          Pause
-        </button>
+
         <button onClick={resetTimer} className="btn">
           Reset
         </button>
       </div>
+      <dialog id="my_modal_3" className="modal">
+        <div className="modal-box">
+          <form method="dialog">
+            <button className="absolute btn btn-sm btn-circle btn-ghost right-2 top-2">
+              ✕
+            </button>
+          </form>
+          <h3 className="text-lg font-bold">Time's up</h3>
+          <p className="py-4">
+            Your current speed: {currentpoint}{" "}
+            <span className="tooltip tooltip-right" data-tip="words per minute">
+              wpm
+            </span>
+          </p>
+          <p className="py-4">
+            Your best speed: {best}{" "}
+            <span className="tooltip tooltip-right" data-tip="words per minute">
+              wpm
+            </span>
+          </p>
+        </div>
+      </dialog>
     </div>
   );
 };

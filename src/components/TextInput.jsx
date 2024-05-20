@@ -1,10 +1,18 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { words } from "../data/words";
 import Notification from "../assets/notification-sound.mp3";
 import useStore from "../context/store";
 const TextInput = () => {
-  const [points, setPoints] = useState(0);
-  const { text, setText, index, setIndex, isRunning, count } = useStore();
+  const {
+    text,
+    setText,
+    index,
+    setIndex,
+    isRunning,
+    count,
+    points,
+    setPoints,
+  } = useStore();
   const audioPlayer = useRef(null);
 
   const checkWord = () => {
@@ -29,16 +37,22 @@ const TextInput = () => {
 
   return (
     <>
-      <div className="flex justify-center items-center flex-col gap-y-8 m-5">
-        <h1 className="text-3xl font-bold text-center  "> {words[index]}</h1>
-        <p>{points}</p>
+      <div className="flex flex-col items-center justify-center m-5 gap-y-8">
+        <h1
+          className="text-3xl font-bold text-center "
+          onCopy={(e) => e.preventDefault()}
+        >
+          {words[index]}
+        </h1>
+
         <input
           type="text"
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="Type here"
           disabled={!isRunning || count === 0}
-          className="input input-bordered input-sm w-full max-w-xs"
+          onPaste={(e) => e.preventDefault()}
+          className="w-full max-w-xs input input-bordered input-lg"
         />
         <audio src={Notification} ref={audioPlayer} />
       </div>

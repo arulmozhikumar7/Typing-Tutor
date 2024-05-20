@@ -19,6 +19,7 @@ export default {
       "coffee",
       "winter",
       "dracula",
+      "corporate",
     ],
   },
   plugins: [require("daisyui")],
